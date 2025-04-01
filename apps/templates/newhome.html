@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIronman System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='newhome.css') }}" type="text/css">
+    <base href="{{ request.url_root }}">
+</head>
+<body>
+    <!-- Form tìm kiếm -->
+    <form id="search-form" class="search-container">
+        <div class="search-row">
+            <textarea id="text-query" name="query" class="query-input" placeholder="Type to query..." rows="1"></textarea>
+            <button type="submit" class="search-button">Search</button>
+        </div>
+    </form>
+
+    <!-- Container hiển thị kết quả tìm kiếm -->
+    <div id="search-results" class="media-gallery"></div>
+
+    <!-- Modal hiển thị thông tin chi tiết -->
+    <div id="info-modal" class="info-modal">
+        <div class="info-modal-content">
+            <button onclick="closeInfoModal()" class="close-button">Close</button>
+            <div id="info-details"></div>
+        </div>
+    </div>
+
+    <!-- Liên kết đến file JavaScript -->
+    <script src="{{ url_for('static', filename='newhome.js') }}" type="text/javascript"></script>
+</body>
+</html>

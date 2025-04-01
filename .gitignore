@@ -1,0 +1,15 @@
+# Bỏ thư mục chứa môi trường ảo
+venv/
+
+# Bỏ thư mục chứa dữ liệu
+data/
+
+# Bỏ thư mục tạm bên trong static
+apps/static/temporary/
+
+# (Tùy chọn) Nếu bạn có __pycache__ hoặc file .pyc
+__pycache__/
+*.pyc
+
+.env
+run.sh
