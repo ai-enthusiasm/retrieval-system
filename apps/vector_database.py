@@ -8,20 +8,14 @@ from qdrant_client import QdrantClient
 from qdrant_client.http.models import PointStruct, Distance, Filter, FieldCondition, MatchValue
 from transformers import AlignProcessor, AlignModel
 import logging
-import os
 
 class VectorDB:
-    def __init__(self, api='http://aienthusiasm:6333', timeout=200.0, device="cuda:0" if torch.cuda.is_available() else "cpu", api_key=None):
+    def __init__(self, api='http://aienthusiasm:6333', timeout=200.0, device="cuda:0" if torch.cuda.is_available() else "cpu", api_key= None):
         """Initialize QdrantImageModule with host, port, and processing mode (local or api)."""
         self.device = device
         self.api_url = api
         self.timeout = timeout
-        
-        # Lấy API key từ biến môi trường hoặc dùng giá trị mặc định
-        self.api_key = api_key or os.environ.get('QDRANT_API_KEY')
-        
-        if not self.api_key:
-            print("Cảnh báo: QDRANT_API_KEY không được cung cấp. Kết nối có thể không thành công.")
+        self.api_key = api_key
 
         # Khởi tạo Qdrant Client
         self.client = QdrantClient(
