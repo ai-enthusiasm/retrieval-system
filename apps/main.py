@@ -7,13 +7,14 @@ import base64
 from io import BytesIO
 import torch
 from torchvision import transforms
-#from googletrans import Translator
 import shutil
+from dotenv import load_dotenv
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 
+load_dotenv()
 # Lấy API key từ biến môi trường
-QDRANT_API_KEY = os.environ.get('QDRANT_API_KEY')
+QDRANT_API_KEY = os.getenv('QDRANT_API_KEY')
 if not QDRANT_API_KEY:
     print("Cảnh báo: QDRANT_API_KEY không được cung cấp trong biến môi trường. Sử dụng giá trị mặc định.")
 

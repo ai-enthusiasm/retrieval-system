@@ -11,5 +11,5 @@ apps/static/temporary/
 __pycache__/
 *.pyc
 
-.env
+apps/.env
 run.sh
