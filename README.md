@@ -1,1 +1,1 @@
-<video controls src="git-1.webm" title="Title"></video>
+![Demo GIF](output.gif)
