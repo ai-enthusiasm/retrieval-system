@@ -3,7 +3,9 @@ import json
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 import uuid
+from dotenv import load_dotenv
 
+load_dotenv()
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 # Cấu hình
@@ -14,7 +16,7 @@ VECTOR_SIZE = 640
 used_uuids = set()
 
 # Lấy API key từ biến môi trường
-QDRANT_API_KEY = os.environ.get('QDRANT_API_KEY')
+QDRANT_API_KEY = os.getenv('QDRANT_API_KEY')
 if not QDRANT_API_KEY:
     print("Cảnh báo: QDRANT_API_KEY không được cung cấp trong biến môi trường. Sử dụng giá trị mặc định.")
 
