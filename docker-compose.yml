@@ -9,7 +9,7 @@ services:
       - "6333:6333"  # API HTTP
       - "6334:6334"  # GRPC
     volumes:
-      - qdrant_data:/qdrant/storage
+      - qdrant_data:/home/phuocdai/Retrieval-System/qdrant/storage
     environment:
       QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY}
       QDRANT__STORAGE__STORAGE_PATH: /qdrant/storage
