@@ -10,6 +10,9 @@ apps/static/temporary/
 # (Tùy chọn) Nếu bạn có __pycache__ hoặc file .pyc
 __pycache__/
 *.pyc
+qdrant/
 
-apps/.env
+docker-compose.yml
+
+.env
 run.sh
