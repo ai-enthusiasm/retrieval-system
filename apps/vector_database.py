@@ -36,10 +36,6 @@ class VectorDB:
         self.processor_align = AlignProcessor.from_pretrained("kakaobrain/align-base")
         self.model_align = AlignModel.from_pretrained("kakaobrain/align-base").to(self.device)
 
-        # # Model mô tả ảnh BLIP
-        # self.processor_blip = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
-        # self.model_blip = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large").to("cpu")
-
     def text_encode(self, text):
         """Mã hóa văn bản thành vector."""
         processed_text = self.processor_align(text=text, return_tensors="pt").to(self.device)

@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let allFrames = [];
     let allMetadata = [];
     let searchType = 'image';
+    let searchStartTime;
 
     // Xử lý sự kiện tìm kiếm
     elements.searchForm.addEventListener('submit', handleSearch);
@@ -30,6 +31,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function performSearch() {
+        searchStartTime = performance.now();
+        console.log('🕒 Search started at:', new Date().toISOString());
+        
         const formData = new FormData(elements.searchForm);
         const queryValue = elements.queryInput.value.trim();
 
@@ -39,20 +43,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         formData.append('query', queryValue);
+        console.log('Sending search request with query:', queryValue);
 
+        const fetchStartTime = performance.now();
         fetch('/search', {
             method: 'POST',
             body: formData
         })
         .then(response => {
+            const fetchEndTime = performance.now();
+            console.log(`🕒 Network request took: ${(fetchEndTime - fetchStartTime).toFixed(2)}ms`);
+            
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 return response.json();
             } else {
-                return response.text();
+                console.error('Unexpected content type:', contentType);
+                return response.text().then(text => {
+                    return text;
+                });
             }
         })
         .then(data => {
+            const dataReceiveTime = performance.now();
+            console.log(`🕒 Time until data received: ${(dataReceiveTime - searchStartTime).toFixed(2)}ms`);
+            
             if (typeof data === 'string') {
                 document.getElementById('search-results').innerHTML = data;
             } else {
@@ -67,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //Hiển thị kết quả tìm kiếm
     function displaySearchResults(data) {
-        console.log("Received data:", data);
+        const displayStartTime = performance.now();
         const searchResultsContainer = document.getElementById('search-results');
         if (!searchResultsContainer) {
             console.error('searchResultsContainer element not found.');
@@ -76,26 +91,35 @@ document.addEventListener("DOMContentLoaded", function () {
         searchResultsContainer.innerHTML = '';
     
         if (data.error) {
+            console.error('Error in data:', data.error);
             displayError(data.error);
             return;
         }
     
         allFrames = data.frame_paths || [];
         allMetadata = data.metadata_list || [];
-        console.log("Processed data - Frames:", allFrames.length, "Metadata:", allMetadata.length);
+        
+        if (allFrames.length === 0) {
+            displayError('No images found for your query.');
+            return;
+        }
     
         displayImageResults(allFrames, allMetadata);
+        const displayEndTime = performance.now();
+        console.log(`🕒 Time to process display data: ${(displayEndTime - displayStartTime).toFixed(2)}ms`);
     }
 
     //hiển thị kết quả tìm kiếm ảnh
     function displayImageResults(frames, metadata) {
+        const imageStartTime = performance.now();
         const searchResultsContainer = document.getElementById('search-results');
-        console.log("Displaying image results - Frames:", frames.length, "Metadata:", metadata.length);
         
         searchResultsContainer.innerHTML = '';
+        let loadedImages = 0;
         
         if (frames.length > 0) {
             frames.forEach((framePath, index) => {
+                
                 const container = document.createElement('div');
                 container.className = 'image-container';
         
@@ -103,15 +127,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 img.src = framePath;
                 img.alt = 'Frame Image';
                 img.className = 'clickable-frame';
+                
+                // Add load event listener
+                img.addEventListener('load', () => {
+                    loadedImages++;
+                    
+                    if (loadedImages === frames.length) {
+                        const totalTime = performance.now() - searchStartTime;
+                        console.log(`🏁 All images loaded! Total search and display time: ${totalTime.toFixed(2)}ms`);
+                        console.log(`📊 Performance Summary:
+                            Total Time: ${totalTime.toFixed(2)}ms
+                            Images Loaded: ${loadedImages}/${frames.length}
+                        `);
+                    }
+                });
+                
                 img.addEventListener('click', () => {
-                    console.log("Frame clicked:", framePath);
                     showFrameModal(framePath, frames);
                 });
+                
                 img.onerror = function() {
-                    console.error('Failed to load image:', framePath);
+                    loadedImages++;
+                    console.error(`Failed to load image ${index + 1}:`, framePath);
                     this.src = '/static/placeholder.jpg';
                     this.onerror = null;  // Prevent infinite loop
                 };
+                
                 container.appendChild(img);
         
                 const infoButton = document.createElement('button');
@@ -124,9 +165,13 @@ document.addEventListener("DOMContentLoaded", function () {
         
                 searchResultsContainer.appendChild(container);
             });
+            
+            const domUpdateTime = performance.now();
+            console.log(`🕒 DOM updates completed in: ${(domUpdateTime - imageStartTime).toFixed(2)}ms`);
+            
         } else {
             console.log("No frames to display");
-            searchResultsContainer.innerHTML = '<p>No images found. Try a different query.</p>';
+            searchResultsContainer.innerHTML = '<p class="error-message">No images found. Try a different query.</p>';
         }
     }
     
