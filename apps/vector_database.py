@@ -3,7 +3,6 @@ import torch
 from PIL import Image
 import base64
 import io
-import gzip
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import PointStruct, Distance, Filter, FieldCondition, MatchValue
 from transformers import AlignProcessor, AlignModel
@@ -28,9 +27,9 @@ class VectorDB:
         # Kiểm tra kết nối
         try:
             self.client.get_collections()
-            print("✅ Kết nối thành công đến Qdrant!")
+            print("Kết nối thành công đến Qdrant!")
         except Exception as e:
-            print(f"❌ Không thể kết nối đến Qdrant: {e}")
+            print(f"Không thể kết nối đến Qdrant: {e}")
             raise
 
         # Model xử lý hình ảnh ALIGN
@@ -52,13 +51,13 @@ class VectorDB:
         return text_features.tolist()
 
     def query_dataset(self, query_text=None):
-        """Tìm kiếm dữ liệu trong dataset bằng văn bản hoặc hình ảnh."""
+        """Tìm kiếm dữ liệu trong dataset bằng văn bản."""
         if not query_text:
-            raise ValueError("Cần cung cấp query_text hoặc files_search để tìm kiếm")
+            raise ValueError("Cần cung cấp query_text để tìm kiếm")
 
-        vector = self._get_query_vector(query_text)
+        vector = self.text_encode(query_text)
         if vector is None:
-            print("❌ Không thể tạo vector tìm kiếm")
+            print("Không thể tạo vector tìm kiếm")
             return []
 
         try:
@@ -69,14 +68,8 @@ class VectorDB:
             )
             return qdrant_results
         except Exception as e:
-            print(f"❌ Lỗi khi truy vấn dataset: {e}")
+            print(f"Lỗi khi truy vấn dataset: {e}")
             return []
-
-    def _get_query_vector(self, query_text):
-        """Xác định vector tìm kiếm dựa vào văn bản hoặc hình ảnh."""
-        if query_text:
-            return self.text_encode(query_text)
-        return None
     
     def decode_and_decompress_image(self, base64_str, output_path):
         """Giải mã base64 và lưu ảnh."""
@@ -84,6 +77,6 @@ class VectorDB:
             image_bytes = base64.b64decode(base64_str)
             image = Image.open(io.BytesIO(image_bytes))
             image.save(output_path)
-            logging.info(f"✅ Ảnh đã được lưu thành công tại {output_path}")
+            logging.info(f"Ảnh đã được lưu thành công tại {output_path}")
         except Exception as e:
-            logging.error(f"❌ Lỗi khi giải mã và lưu ảnh: {e}")
+            logging.error(f"Lỗi khi giải mã và lưu ảnh: {e}")
