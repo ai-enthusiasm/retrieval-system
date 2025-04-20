@@ -17,7 +17,7 @@ print(f"Đang sử dụng thiết bị: {device}")
 csv_folder = os.path.join(BASE_DIR, 'data', 'map-keyframes')
 image_base_folder = os.path.join(BASE_DIR, 'data', 'keyframe-image')
 checkpoint_file = os.path.join(BASE_DIR, 'data', 'checkpoint.json')
-output_json_dir = os.path.join(BASE_DIR, 'data', 'keyframes_json')
+output_json_dir = os.path.join(BASE_DIR, 'data', 'keyframes_json_test')
 
 # Giới hạn số lượng batch là 20 ảnh
 max_batch_size_in_images = 50  # Batch chứa tối đa 20 ảnh
