@@ -54,25 +54,17 @@ document.addEventListener("DOMContentLoaded", function () {
             const fetchEndTime = performance.now();
             console.log(`🕒 Network request took: ${(fetchEndTime - fetchStartTime).toFixed(2)}ms`);
             
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                return response.json();
-            } else {
-                console.error('Unexpected content type:', contentType);
-                return response.text().then(text => {
-                    return text;
-                });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+            return response.json();
         })
         .then(data => {
             const dataReceiveTime = performance.now();
             console.log(`🕒 Time until data received: ${(dataReceiveTime - searchStartTime).toFixed(2)}ms`);
+            console.log('Received data:', data);
             
-            if (typeof data === 'string') {
-                document.getElementById('search-results').innerHTML = data;
-            } else {
-                displaySearchResults(data);
-            }
+            displaySearchResults(data);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -96,15 +88,18 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
     
-        allFrames = data.frame_paths || [];
-        allMetadata = data.metadata_list || [];
+        const frames = data.frame_paths || [];
+        const metadata = data.metadata_list || [];
         
-        if (allFrames.length === 0) {
+        console.log('Frames:', frames);
+        console.log('Metadata:', metadata);
+        
+        if (frames.length === 0) {
             displayError('No images found for your query.');
             return;
         }
     
-        displayImageResults(allFrames, allMetadata);
+        displayImageResults(frames, metadata);
         const displayEndTime = performance.now();
         console.log(`🕒 Time to process display data: ${(displayEndTime - displayStartTime).toFixed(2)}ms`);
     }
@@ -119,7 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
         
         if (frames.length > 0) {
             frames.forEach((framePath, index) => {
-                
                 const container = document.createElement('div');
                 container.className = 'image-container';
         
